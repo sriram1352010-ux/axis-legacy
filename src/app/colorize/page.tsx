@@ -1,7 +1,7 @@
 "use client";
 export const dynamic = 'force-dynamic';
 import { useState } from "react";
-import { processColorize } from './DeOldifyService';
+import { processColorize } from '../components/tools/Colorize/DeOldifyService';
 
 export default function ColorizePage() {
   const [image, setImage] = useState<string | null>(null);
