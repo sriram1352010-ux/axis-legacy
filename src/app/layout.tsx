@@ -4,12 +4,16 @@ import { Inter } from 'next/font/google';
 
 const inter = Inter({ subsets: ['latin'] });
 
-export const metadata: Metadata = {
-  title: 'Axis Legacy',
-  description: 'AI-powered image transformation tools',
-  viewport: 'width=device-width, initial-scale=1',
+// Separated from metadata
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
 };
 
+export const metadata = {
+  title: 'Axis Legacy',
+  description: 'AI-powered image transformation tools',
+};
 export default function RootLayout({
   children,
 }: {
