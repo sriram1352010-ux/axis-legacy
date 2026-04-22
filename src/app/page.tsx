@@ -1,5 +1,4 @@
-import HomeHub from "@/app/components/HomeHub";
-
+import HomeHub from './components/HomeHub/HomeHub';
 export default function Home() {
   return (
     <main>

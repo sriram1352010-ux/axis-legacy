@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { processColorize } from "@/app/components/tools/Colorize/DeOldifyService";
+import { processColorize } from './DeOldifyService';
 
 export default function ColorizePage() {
   const [image, setImage] = useState<string | null>(null);

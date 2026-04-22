@@ -3,8 +3,8 @@
 import React, { useState } from 'react';
 import CustomSlider from '../../ui/CustomSlider';
 import Modal from '../../ui/Modal';
-import { processFaceClarity } from '@/components/tools/FaceClarity/GFPGANService';
-import { StorageService } from '@/components/services/StorageService'; // Moved to top
+import { processFaceClarity } from '@/app/components/tools/FaceClarity/GFPGANService';
+import { StorageService } from '@/app/components/services/StorageService';
 import { Loader2, Sparkles, Upload, ImageIcon } from 'lucide-react';
 
 const FaceClarityTool = () => {
