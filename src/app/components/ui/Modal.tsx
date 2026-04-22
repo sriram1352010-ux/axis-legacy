@@ -33,7 +33,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
             initial={{ scale: 0.95, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.95, opacity: 0, y: 20 }}
-            className="relative bg-zinc-900 border border-zinc-800 shadow-2xl rounded-2xl w-full max-w-md overflow-hidden"
+            className="relative bg-zinc-900 border border-zinc-800 shadow-2xl rounded-2xl w-[95%] max-w-md overflow-hidden mx-auto"
           >
             <div className="p-5 border-b border-zinc-800 bg-zinc-900/50">
               <h3 className="text-xl font-bold text-white tracking-tight">{title}</h3>
