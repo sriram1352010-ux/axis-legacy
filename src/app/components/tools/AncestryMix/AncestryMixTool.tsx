@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from 'react';
 import CustomSlider from '../../ui/CustomSlider';
 import Modal from '../../ui/Modal';
