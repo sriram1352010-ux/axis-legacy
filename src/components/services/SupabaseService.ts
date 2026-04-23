@@ -2,20 +2,20 @@ import { createClient } from '@supabase/supabase-js';
 
 export class SupabaseService {
   /**
-   * Uploads an image to Supabase Storage.
-   * Only executes in the browser to prevent build-time crashes.
+   * THE SHIELD: Only initializes the client if in a browser and keys are valid.
+   * This prevents the "Invalid supabaseUrl" error during Vercel builds.
    */
   static async uploadImage(file: File, path: string): Promise<string> {
-    // 1. Only initialize inside the method, only in the browser
-    if (typeof window === 'undefined') return ""; 
+    // 1. Exit if server-side (build phase) or environment variables are missing
+    if (typeof window === 'undefined' || !process.env.NEXT_PUBLIC_SUPABASE_URL) {
+      return ""; 
+    }
 
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
-    // Safety check for environment variables
-    if (!url || !url.startsWith('http') || !key) {
-      throw new Error("Supabase configuration missing or invalid.");
-    }
+    // 2. Final verification to satisfy the Supabase internal validator
+    if (!url.startsWith('http')) return "";
 
     const supabase = createClient(url, key);
 
@@ -33,12 +33,16 @@ export class SupabaseService {
    * Fetches user profile data from the 'users' table.
    */
   static async getUserData(userId: string) {
-    if (typeof window === 'undefined') return null;
+    if (typeof window === 'undefined' || !process.env.NEXT_PUBLIC_SUPABASE_URL) {
+      return null;
+    }
     
-    const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-    const supabase = createClient(url, key);
+    
+    if (!url.startsWith('http')) return null;
 
+    const supabase = createClient(url, key);
     const { data, error } = await supabase
       .from('users')
       .select('*')
@@ -53,12 +57,16 @@ export class SupabaseService {
    * Updates user profile data.
    */
   static async updateUser(userId: string, updates: any) {
-    if (typeof window === 'undefined') return null;
+    if (typeof window === 'undefined' || !process.env.NEXT_PUBLIC_SUPABASE_URL) {
+      return null;
+    }
 
-    const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-    const supabase = createClient(url, key);
 
+    if (!url.startsWith('http')) return null;
+
+    const supabase = createClient(url, key);
     const { data, error } = await supabase
       .from('users')
       .update(updates)

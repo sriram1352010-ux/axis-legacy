@@ -1,9 +1,11 @@
 "use client";
 
 import React, { useState } from 'react';
+import { processGFPGAN } from './GFPGANService'; // Ensure this path is correct
+import { SupabaseService } from '@/components/services/SupabaseService';
 import CustomSlider from '../../ui/CustomSlider';
 import Modal from '../../ui/Modal';
-import { processGFPGAN } from '@/components/tools/FaceClarity/GFPGANService';
+
 import { StorageService } from '@/components/services/StorageService';
 import { Loader2, Sparkles, Upload, Zap, Crown, Check, X } from 'lucide-react';
 
@@ -35,25 +37,38 @@ const FaceClarityTool = () => {
     }
   };
 
-  const handleApply = async () => {
-    // 1. THE HOOK: Check credits before processing
+const handleApply = async () => {
+    // 1. THE HOOK: Credit check for the Freemium model
     if (usageCount >= 3 && !isPremium) {
       setIsModalOpen(false);
       setShowUpsell(true);
       return;
     }
 
+    // 2. Validation: Ensure we have a source image from Supabase/Upload
     if (!sourceImage) return;
     
     setIsLoading(true);
     setIsModalOpen(false);
 
     try {
+      // 3. Process image via the TencentARC/GFPGAN model
+      // We use 'sourceImage!' because we've already checked for null above
       const processedImage = await processGFPGAN(sourceImage!);      
+      
+      // 4. Update the UI with the high-fidelity result
       setResultImage(processedImage);
-     setUsageCount(prev => prev + 1);    
+      
+      // 5. Increment usage count for the business logic
+      setUsageCount(prev => prev + 1);    
+      
+      // Optional: Sync usageCount to Supabase here if needed
+      // await SupabaseService.updateUser(userId, { credits_used: usageCount + 1 });
+
     } catch (error) {
-      console.error("Enhancement failed:", error);
+      // Enterprise-grade error logging
+      console.error("AXIS_LEGACY_PROCESS_ERROR:", error);
+      // You could add a toast notification here for the user
     } finally {
       setIsLoading(false);
     }
