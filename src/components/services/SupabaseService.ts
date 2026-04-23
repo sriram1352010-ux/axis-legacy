@@ -1,24 +1,35 @@
 import { createClient } from '@supabase/supabase-js';
 
 export class SupabaseService {
-  // Helper to get the client only when needed
-  private static getClient() {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  private static client: any = null;
 
-    if (!supabaseUrl || !supabaseAnonKey) {
-      // During build, we return null instead of crashing
+  private static getClient() {
+    // 1. Singleton pattern: return existing client if available
+    if (this.client) return this.client;
+
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+    // 2. THE SHIELD: Prevents Vercel from crashing during build
+    // It checks if URL is missing or doesn't start with http
+    if (!url || !url.startsWith('http') || !key) {
+      console.warn("Supabase bypass: Build phase or missing keys.");
       return null;
     }
 
-    return createClient(supabaseUrl, supabaseAnonKey, {
-      auth: { persistSession: false }
-    });
+    try {
+      this.client = createClient(url, key, {
+        auth: { persistSession: false }
+      });
+      return this.client;
+    } catch (e) {
+      return null;
+    }
   }
 
   static async uploadImage(file: File, path: string): Promise<string> {
     const client = this.getClient();
-    if (!client) throw new Error("Supabase not configured");
+    if (!client) throw new Error("Cloud Storage not connected. Check environment variables.");
 
     const { data, error } = await client
       .storage
@@ -32,7 +43,7 @@ export class SupabaseService {
 
   static async getUserData(userId: string) {
     const client = this.getClient();
-    if (!client) throw new Error("Supabase not configured");
+    if (!client) throw new Error("Database not connected.");
 
     const { data, error } = await client
       .from('users')
@@ -46,7 +57,7 @@ export class SupabaseService {
 
   static async updateUser(userId: string, updates: any) {
     const client = this.getClient();
-    if (!client) throw new Error("Supabase not configured");
+    if (!client) throw new Error("Database not connected.");
 
     const { data, error } = await client
       .from('users')
