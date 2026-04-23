@@ -1,8 +1,8 @@
 "use client";
-export const dynamic = 'force-dynamic';
+
 import { useEffect, useState } from "react";
 import FaceClarityTool from '@/app/components/tools/FaceClarity/FaceClarityTool';
-
+export const dynamic = 'force-dynamic';
 export default function FaceClarityPage() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);

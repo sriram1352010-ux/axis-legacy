@@ -1,10 +1,10 @@
 "use client";
-export const dynamic = 'force-dynamic';
+
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { processColorize } from '@/app/components/tools/Colorize/DeOldifyService';
 import { Upload, Palette, Zap } from 'lucide-react';
-
+export const dynamic = 'force-dynamic';
 export default function ColorizePage() {
   const [image, setImage] = useState<string | null>(null);
   const [result, setResult] = useState<string | null>(null);

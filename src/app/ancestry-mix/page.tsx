@@ -1,8 +1,8 @@
 "use client";
-export const dynamic = 'force-dynamic';
+
 import { useEffect, useState } from "react";
 import AncestryMixTool from '../components/tools/AncestryMix/AncestryMixTool';
-
+export const dynamic = 'force-dynamic';
 export default function AncestryMixPage() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);

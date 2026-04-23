@@ -1,10 +1,10 @@
 "use client"; // Must be at the very top
 
-export const dynamic = 'force-dynamic';
+
 
 import { useEffect, useState } from "react";
 import AgeTransformTool from '../components/tools/AgeTransform/AgeTransformTool';
-
+export const dynamic = 'force-dynamic';
 export default function AgeTransformPage() {
   const [mounted, setMounted] = useState(false);
 
