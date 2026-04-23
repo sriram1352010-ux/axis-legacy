@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { processColorize } from '@/app/components/tools/Colorize/DeOldifyService';
+import { processColorize } from '@/components/tools/Colorize/DeOldifyService';
 import { Upload, Palette, Zap } from 'lucide-react';
 export const dynamic = 'force-dynamic';
 export default function ColorizePage() {
@@ -23,8 +23,11 @@ export default function ColorizePage() {
     }
   };
 
-  const handleProcess = async () => {
+const handleProcess = async () => {
+    // 1. Safety check for the compiler (Fixes TS2345)
     if (!image) return;
+
+    // 2. Business Logic: Usage Limits
     if (usageCount >= 3) {
       alert("Daily Free Limit Reached! Upgrade to Axis Pro for unlimited colorizing.");
       return;
@@ -32,11 +35,15 @@ export default function ColorizePage() {
     
     setLoading(true);
     try {
-      const processedImage = await processColorize(image);
+      // 3. The '!' tells TypeScript: "I've already checked that image isn't null"
+      const processedImage = await processColorize(image!); 
       setResult(processedImage);
+      
+      // 4. Increment usage only on success
       setUsageCount(prev => prev + 1);
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Colorize Error:", error);
+      alert("The Neural Engine encountered an issue. Please try again.");
     } finally {
       setLoading(false);
     }

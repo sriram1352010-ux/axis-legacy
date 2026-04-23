@@ -3,7 +3,8 @@
 
 
 import { useEffect, useState } from "react";
-import AgeTransformTool from '../components/tools/AgeTransform/AgeTransformTool';
+// Change from relative ../ to the absolute alias
+import AgeTransformTool from '@/components/tools/AgeTransform/AgeTransformTool';
 export const dynamic = 'force-dynamic';
 export default function AgeTransformPage() {
   const [mounted, setMounted] = useState(false);
