@@ -1,51 +1,45 @@
 import { createClient } from '@supabase/supabase-js';
 
 export class SupabaseService {
-  private static client: any = null;
-
-  private static getClient() {
-    // 1. Singleton pattern: return existing client if available
-    if (this.client) return this.client;
+  /**
+   * Uploads an image to Supabase Storage.
+   * Only executes in the browser to prevent build-time crashes.
+   */
+  static async uploadImage(file: File, path: string): Promise<string> {
+    // 1. Only initialize inside the method, only in the browser
+    if (typeof window === 'undefined') return ""; 
 
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-    // 2. THE SHIELD: Prevents Vercel from crashing during build
-    // It checks if URL is missing or doesn't start with http
+    // Safety check for environment variables
     if (!url || !url.startsWith('http') || !key) {
-      console.warn("Supabase bypass: Build phase or missing keys.");
-      return null;
+      throw new Error("Supabase configuration missing or invalid.");
     }
 
-    try {
-      this.client = createClient(url, key, {
-        auth: { persistSession: false }
-      });
-      return this.client;
-    } catch (e) {
-      return null;
-    }
-  }
+    const supabase = createClient(url, key);
 
-  static async uploadImage(file: File, path: string): Promise<string> {
-    const client = this.getClient();
-    if (!client) throw new Error("Cloud Storage not connected. Check environment variables.");
-
-    const { data, error } = await client
+    const { data, error } = await supabase
       .storage
       .from('images')
       .upload(path, file);
 
     if (error) throw error;
 
-    return client.storage.from('images').getPublicUrl(data.path).data.publicUrl;
+    return supabase.storage.from('images').getPublicUrl(data.path).data.publicUrl;
   }
 
+  /**
+   * Fetches user profile data from the 'users' table.
+   */
   static async getUserData(userId: string) {
-    const client = this.getClient();
-    if (!client) throw new Error("Database not connected.");
+    if (typeof window === 'undefined') return null;
+    
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+    const supabase = createClient(url, key);
 
-    const { data, error } = await client
+    const { data, error } = await supabase
       .from('users')
       .select('*')
       .eq('id', userId)
@@ -55,11 +49,17 @@ export class SupabaseService {
     return data;
   }
 
+  /**
+   * Updates user profile data.
+   */
   static async updateUser(userId: string, updates: any) {
-    const client = this.getClient();
-    if (!client) throw new Error("Database not connected.");
+    if (typeof window === 'undefined') return null;
 
-    const { data, error } = await client
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+    const supabase = createClient(url, key);
+
+    const { data, error } = await supabase
       .from('users')
       .update(updates)
       .eq('id', userId)
