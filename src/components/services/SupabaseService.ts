@@ -1,12 +1,14 @@
 import { createClient } from '@supabase/supabase-js';
 
-// Use a placeholder URL for build-time only
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder-project.supabase.co';
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key';
 
-// Initialize the client
-// This will no longer crash the build because 'https://placeholder.supabase.co' is a valid URL format
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// This safely initializes without throwing a validation error
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    persistSession: false // Recommended for server-side stability
+  }
+});
 
 export class SupabaseService {
   static async uploadImage(file: File, path: string): Promise<string> {
