@@ -1,51 +1,92 @@
 "use client";
+
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
+import { ChevronRight, Lock, Zap, Crown } from "lucide-react";
 
 interface CardProps {
   title: string;
   emoji: string;
   description: string;
-  color: "blue" | "green" | "yellow" | "pink";
-  isPremium?: boolean; // Added for Freemium showcase
+  limit: number;
+  remaining: number;
+  isPremium?: boolean; // Added for Pro users
 }
 
-export default function Card({ title, emoji, description, color, isPremium }: CardProps) {
+export default function Card({ title, emoji, description, limit, remaining, isPremium = false }: CardProps) {
   const router = useRouter();
+  const isLocked = !isPremium && remaining <= 0;
+  const progressPercentage = (remaining / limit) * 100;
   
   const handleCardClick = () => {
-    // FIX: Removed "/tools" because your folders are at the root
-    switch(title) {
-      case "Colorize": router.push("/colorize"); break;
-      case "Face Clarity": router.push("/face-clarity"); break;
-      case "Age Transform": router.push("/age-transform"); break;
-      case "Ancestry Mix": router.push("/ancestry-mix"); break;
-      default: router.push("/colorize");
-    }
+    // Even if locked, we might want them to click to see the Upsell
+    const path = title.toLowerCase().replace(/\s+/g, "-");
+    router.push(`/${path}`);
   };
 
   return (
     <motion.div
-      whileHover={{ scale: 1.05, translateY: -5 }}
+      whileHover={{ y: -8, transition: { duration: 0.2 } }}
       whileTap={{ scale: 0.98 }}
-      className={`relative p-6 rounded-2xl border border-white/10 bg-zinc-900/50 backdrop-blur-md cursor-pointer overflow-hidden group`}
       onClick={handleCardClick}
+      className={`relative p-8 rounded-[3rem] border transition-all duration-500 flex flex-col h-full overflow-hidden group
+        ${isLocked 
+          ? "bg-zinc-950 border-white/5 cursor-pointer opacity-80" 
+          : "bg-zinc-900/20 border-white/5 backdrop-blur-2xl cursor-pointer hover:border-blue-500/40 shadow-2xl hover:shadow-blue-500/10"
+        }`}
     >
-      {/* Premium Badge */}
-      {isPremium && (
-        <div className="absolute top-3 right-3 px-2 py-1 bg-blue-600 text-[10px] font-bold rounded-md text-white z-20 shadow-lg">
-          PRO
-        </div>
-      )}
+      {/* 1. Dynamic Credit/Status Badge */}
+      <div className={`absolute top-6 right-6 px-4 py-1.5 rounded-full text-[9px] font-black z-20 flex items-center gap-2 border tracking-tighter
+        ${isPremium 
+          ? "bg-amber-500/10 border-amber-500/20 text-amber-500" 
+          : isLocked 
+            ? "bg-red-500/10 border-red-500/20 text-red-500" 
+            : "bg-zinc-800/80 border-white/10 text-blue-400"
+        }`}
+      >
+        {isPremium ? <Crown size={10} fill="currentColor" /> : isLocked ? <Lock size={10} /> : <Zap size={10} />}
+        {isPremium ? "PRO UNLIMITED" : isLocked ? "UPGRADE TO USE" : `${remaining}/${limit} CREDITS`}
+      </div>
 
-      <div className="relative z-10">
-        <div className="text-4xl mb-4 group-hover:scale-110 transition-transform">{emoji}</div>
-        <h3 className="text-xl font-bold mb-1 text-white">{title}</h3>
-        <p className="text-zinc-500 text-sm">{description}</p>
+      <div className="relative z-10 flex flex-col h-full pt-4">
+        {/* 2. Icon with Grayscale Logic */}
+        <div className={`text-6xl mb-8 transition-all duration-700 
+          ${isLocked ? "grayscale opacity-30" : "group-hover:scale-110 group-hover:rotate-6"}
+        `}>
+          {emoji}
+        </div>
+        
+        <h3 className="text-2xl font-black mb-4 text-white tracking-tighter italic uppercase">
+          {title}
+        </h3>
+        
+        <p className="text-zinc-500 text-sm leading-relaxed mb-8 flex-grow font-medium">
+          {description}
+        </p>
+
+        {/* 3. MNC Progress Bar (Visualizing the limit) */}
+        {!isPremium && (
+          <div className="w-full h-1 bg-zinc-800/50 rounded-full mb-6 overflow-hidden">
+            <motion.div 
+              initial={{ width: 0 }}
+              animate={{ width: `${progressPercentage}%` }}
+              className={`h-full ${isLocked ? 'bg-red-500' : 'bg-blue-500'}`}
+            />
+          </div>
+        )}
+        
+        <div className={`flex items-center text-[11px] font-black uppercase tracking-[0.2em] transition-all
+          ${isLocked ? "text-amber-500 group-hover:gap-3" : "text-blue-500 group-hover:gap-3"}
+        `}>
+          {isLocked ? "Unlock with Pro" : "Initiate Protocol"} 
+          <ChevronRight size={14} className="ml-1" />
+        </div>
       </div>
       
-      {/* Neon Glow Hover Effect */}
-      <div className={`absolute inset-0 border-2 border-blue-500/50 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none shadow-[inset_0_0_20px_rgba(59,130,246,0.2)]`}></div>
+      {/* 4. Background Decorative Glow */}
+      <div className={`absolute -bottom-10 -right-10 w-32 h-32 blur-[60px] rounded-full transition-opacity duration-500
+        ${isPremium ? "bg-amber-500/10 opacity-40" : isLocked ? "bg-red-500/5 opacity-100" : "bg-blue-500/10 opacity-0 group-hover:opacity-100"}
+      `} />
     </motion.div>
   );
 }

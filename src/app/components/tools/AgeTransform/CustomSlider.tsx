@@ -19,20 +19,23 @@ export default function CustomSlider({ min, max, defaultValue, onChange }: Custo
   };
 
   return (
-    <div className="mb-6">
-      <div className="flex justify-between mb-2">
-        <span className="text-gray-400">{min}</span>
-        <span className="text-lg font-bold text-neon.blue">{value}</span>
-        <span className="text-gray-400">{max}</span>
-      </div>
+    <div className="w-full py-4">
       <input
         type="range"
         min={min}
         max={max}
         value={value}
         onChange={handleChange}
-        className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-neon.blue"
+        /* THICK SLIDER FOR MOBILE FINGERS */
+        className="w-full h-4 bg-zinc-800 rounded-full appearance-none cursor-pointer accent-blue-600 hover:accent-blue-400 transition-all shadow-inner"
+        style={{
+          WebkitAppearance: 'none',
+        }}
       />
+      <div className="flex justify-between mt-3 text-[10px] font-bold text-zinc-600 uppercase tracking-widest">
+        <span>Birth ({min})</span>
+        <span>Centennial ({max})</span>
+      </div>
     </div>
   );
 }
