@@ -3,8 +3,8 @@
 import React, { useState } from 'react';
 import CustomSlider from '../../ui/CustomSlider';
 import Modal from '../../ui/Modal';
-import { processFaceClarity } from '@/app/components/tools/FaceClarity/GFPGANService';
-import { StorageService } from '@/app/components/services/StorageService';
+import { processGFPGAN } from '@/components/tools/FaceClarity/GFPGANService';
+import { StorageService } from '@/components/services/StorageService';
 import { Loader2, Sparkles, Upload, Zap, Crown, Check, X } from 'lucide-react';
 
 const FaceClarityTool = () => {
@@ -49,9 +49,9 @@ const FaceClarityTool = () => {
     setIsModalOpen(false);
 
     try {
-      const enhancedImage = await processFaceClarity(sourceImage);
-      setResultImage(enhancedImage);
-      setUsageCount(prev => prev + 1); // Increment usage (MNCs update DB here)
+      const processedImage = await processGFPGAN(sourceImage!);      
+      setResultImage(processedImage);
+     setUsageCount(prev => prev + 1);    
     } catch (error) {
       console.error("Enhancement failed:", error);
     } finally {

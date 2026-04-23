@@ -1,5 +1,4 @@
-export async function processFaceClarity(imageUrl: string): Promise<string> {
-  // 1. Pre-flight Validation
+export async function processGFPGAN(imageUrl: string): Promise<string> {  // 1. Pre-flight Validation
   if (!imageUrl) throw new Error("Source image URL is required for AI restoration.");
 
   // 2. Development Mock Mode (Save API credits during testing)
